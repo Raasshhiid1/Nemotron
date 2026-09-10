@@ -32,8 +32,8 @@ uv run pytest tests/
 
 ## Checklist
 
-- [ ] My code follows the existing style conventions (ruff + ruff-format)
-- [ ] I have added type hints and docstrings where applicable
+- [x] My code follows the existing style conventions (ruff + ruff-format)
+- [x] I have added type hints and docstrings where applicable
 - [ ] I have added tests for new functionality
 - [ ] All existing and new tests pass
 - [ ] I have updated documentation where needed

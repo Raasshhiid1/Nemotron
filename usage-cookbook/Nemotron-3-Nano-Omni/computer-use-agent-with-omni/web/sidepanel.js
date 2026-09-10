@@ -13,12 +13,49 @@ const log = $("event-log");
 const placeholder = $("vnc-placeholder");
 const vncFrame = $("vnc-frame");
 const instruction = $("instruction");
+const ratSpeech = $("rat-speech");
+const ratChatForm = $("rat-chat-form");
+const ratMessage = $("rat-message");
+const ratVoice = $("rat-voice");
 
 let state = {
   jobId: null,
   eventSource: null,
   desktopRestarting: false,
+  ratVoiceEnabled: true,
 };
+
+const ratReplies = [
+  "Squeak! I’m here and ready to help.",
+  "That sounds fun. Give me a task and I’ll keep an eye on the screen.",
+  "I’m Remy, your tiny desktop copilot. What should we do next?",
+  "Got it! I’ll stay right here while the agent works.",
+];
+
+function ratTalk(message, speak = true) {
+  ratSpeech.textContent = message;
+  if (speak && state.ratVoiceEnabled && "speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.rate = 1.05;
+    utterance.pitch = 1.15;
+    window.speechSynthesis.speak(utterance);
+  }
+}
+
+function respondToRat(message) {
+  const normalized = message.toLowerCase();
+  if (normalized.includes("hello") || normalized.includes("hi")) {
+    return "Hello! My whiskers are ready. What can I do for you?";
+  }
+  if (normalized.includes("thank")) {
+    return "You’re welcome! That’s what a helpful rat is for.";
+  }
+  if (normalized.includes("what") && normalized.includes("do")) {
+    return "I can keep you company and help you run desktop tasks through the agent.";
+  }
+  return ratReplies[Math.floor(Math.random() * ratReplies.length)];
+}
 
 // ── Desktop status ─────────────────────────────────────────────────────────
 
@@ -113,6 +150,7 @@ async function runAgent() {
   log.innerHTML = "";
   agentStatus.textContent = "starting…";
   setBadge("running", "running");
+  ratTalk("I’m on it! Watch the desktop while I work.");
   btnRun.disabled = true;
   btnStop.disabled = false;
 
@@ -315,9 +353,11 @@ function appendEvent(ev) {
       break;
     case "done":
       body = `<span class="tag" style="color:var(--green)">✓ DONE</span>`;
+      ratTalk("All done! Want me to help with anything else?");
       break;
     case "failed":
       body = `<span class="tag err">✗ FAILED</span>${ev.reason || ""}`;
+      ratTalk("Oops, that task ran into a problem. Try a smaller instruction?");
       break;
     case "stopped":
       body = `<span class="tag">■ stopped</span>`;
@@ -350,6 +390,21 @@ function escape(s) {
 btnRun.addEventListener("click", runAgent);
 btnStop.addEventListener("click", stopAgent);
 btnRestartDesktop.addEventListener("click", restartDesktop);
+ratChatForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const message = ratMessage.value.trim();
+  if (!message) return;
+  ratTalk(respondToRat(message));
+  ratMessage.value = "";
+});
+ratVoice.addEventListener("click", () => {
+  state.ratVoiceEnabled = !state.ratVoiceEnabled;
+  ratVoice.textContent = state.ratVoiceEnabled ? "🔊 Voice on" : "🔇 Voice off";
+  ratVoice.setAttribute("aria-pressed", String(state.ratVoiceEnabled));
+  if (!state.ratVoiceEnabled && "speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+});
 
 // Initial check + periodic polling
 checkDesktop();
