@@ -21,6 +21,28 @@
       <iframe id="vnc-frame" hidden src="about:blank"
               allow="clipboard-read; clipboard-write; fullscreen"
               referrerpolicy="no-referrer"></iframe>
+      <section id="rat-assistant" aria-label="Rat assistant">
+        <div id="rat-speech" role="status" aria-live="polite">
+          Hi! I’m Remy the rat. Tell me what you want to do.
+        </div>
+        <div class="rat-character" aria-hidden="true">
+          <span class="rat-tail"></span>
+          <span class="rat-ear rat-ear-left"></span>
+          <span class="rat-ear rat-ear-right"></span>
+          <span class="rat-body"></span>
+          <span class="rat-eye"></span>
+          <span class="rat-nose"></span>
+          <span class="rat-whiskers"></span>
+        </div>
+        <form id="rat-chat-form" class="rat-chat">
+          <label class="sr-only" for="rat-message">Message Remy</label>
+          <input id="rat-message" type="text" maxlength="240"
+                 placeholder="Talk to Remy…" autocomplete="off" />
+          <button type="submit" aria-label="Send message">Send</button>
+        </form>
+        <button id="rat-voice" class="rat-voice" type="button"
+                aria-pressed="true">🔊 Voice on</button>
+      </section>
     </section>
 
     <aside id="side-panel">
